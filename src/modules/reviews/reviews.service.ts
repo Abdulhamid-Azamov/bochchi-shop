@@ -5,7 +5,6 @@ import { Review } from 'src/entities/review.entity';
 import { Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/createreview.dto';
 
-
 @Injectable()
 export class ReviewsService {
   constructor(

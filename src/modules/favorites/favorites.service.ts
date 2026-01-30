@@ -5,8 +5,6 @@ import { Product } from 'src/entities/product.entity';
 import { Repository } from 'typeorm';
 import { AddToFavoritesDto } from './dto/addtofavorite';
 
-
-
 @Injectable()
 export class FavoritesService {
   constructor(

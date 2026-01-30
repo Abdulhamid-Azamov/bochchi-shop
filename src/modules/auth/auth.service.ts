@@ -29,7 +29,7 @@ export class AuthService {
     @InjectRepository(AuthSession)
     private sessionRepository: Repository<AuthSession>,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async register(registerDto: RegisterDto) {
     const { username, email, password } = registerDto;
@@ -223,13 +223,13 @@ export class AuthService {
     });
   }
 
-
   private async generateRefreshToken(user: User): Promise<string> {
     const payload = { sub: user.id, email: user.email };
 
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN as JwtSignOptions['expiresIn'],
+      expiresIn: process.env
+        .JWT_REFRESH_EXPIRES_IN as JwtSignOptions['expiresIn'],
     });
   }
 }

@@ -11,4 +11,4 @@ import { AuthSession } from 'src/entities/auth-session.entity';
   providers: [UsersService],
   exports: [UsersService],
 })
-export class UserModule { }
+export class UserModule {}

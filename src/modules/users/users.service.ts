@@ -11,8 +11,6 @@ import { User, UserRole } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateAdminDto } from './dto/create-admin.dto';
 
-
-
 export class UpdateUserRole {
   role: UserRole;
 }
@@ -22,7 +20,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async createAdmin(createAdminDto: CreateAdminDto, creatorRole: UserRole) {
     if (creatorRole !== UserRole.SUPERADMIN) {

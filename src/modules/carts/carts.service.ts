@@ -7,10 +7,6 @@ import { Repository } from 'typeorm';
 import { AddToCartDto } from './dto/createcart.dto';
 import { UpdateCartItemDto } from './dto/updatecartitem.dto';
 
-
-
-
-
 @Injectable()
 export class CartsService {
   constructor(

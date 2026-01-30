@@ -27,7 +27,7 @@ export class FavoritesController {
     return this.favoritesService.findAll(req.user.id);
   }
 
-  @Delete()
+  @Delete(':productId')
   remove(@Request() req, @Param('productId') productId: string) {
     return this.favoritesService.remove(req.user.id, +productId);
   }

@@ -10,14 +10,9 @@ import { OrderItem } from 'src/entities/order-item.entity';
 import { Order, OrderStatus } from 'src/entities/order.entity';
 import { Product } from 'src/entities/product.entity';
 import { Repository } from 'typeorm';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
-export class CreateOrderDto {
-  cartId: number;
-}
-
-export class UpdateOrderStatusDto {
-  status: OrderStatus;
-}
 
 @Injectable()
 export class OrdersService {
@@ -32,7 +27,7 @@ export class OrdersService {
     private cartRepository: Repository<Cart>,
     @InjectRepository(CartItem)
     private cartItemRepository: Repository<CartItem>,
-  ) {}
+  ) { }
 
   async createOrder(userId: number, createOrderDto: CreateOrderDto) {
     const { cartId } = createOrderDto;

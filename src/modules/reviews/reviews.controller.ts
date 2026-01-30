@@ -15,7 +15,7 @@ import { CreateReviewDto } from './dto/createreview.dto';
 
 @Controller('reviews')
 export class ReviewsController {
-  constructor(private readonly reviewsService: ReviewsService) { }
+  constructor(private readonly reviewsService: ReviewsService) {}
 
   @UseGuards(JwtAuthGuard) // agar foydalanuvchi token bilan bo'lsa
   @Post()
