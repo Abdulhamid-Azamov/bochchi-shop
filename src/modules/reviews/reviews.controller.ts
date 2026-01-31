@@ -17,7 +17,7 @@ import { CreateReviewDto } from './dto/createreview.dto';
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
-  @UseGuards(JwtAuthGuard) // agar foydalanuvchi token bilan bo'lsa
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Req() req, @Body() createReviewDto: CreateReviewDto) {
     const userId = req.user.id;

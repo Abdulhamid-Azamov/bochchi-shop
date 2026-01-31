@@ -10,6 +10,8 @@ import * as bcrypt from 'bcrypt';
 import { User, UserRole } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateAdminDto } from './dto/create-admin.dto';
+import { successRes } from '../utils/success-res';
+import { use } from 'passport';
 
 export class UpdateUserRole {
   role: UserRole;
@@ -20,7 +22,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async createAdmin(createAdminDto: CreateAdminDto, creatorRole: UserRole) {
     if (creatorRole !== UserRole.SUPERADMIN) {
@@ -48,10 +50,8 @@ export class UsersService {
     });
 
     await this.userRepository.save(admin);
-    return {
-      message: 'Admin user created successfully',
-      admin,
-    };
+
+    return successRes(admin, 201)
   }
 
   async getAllUsers(requesterRole: UserRole) {
@@ -67,7 +67,7 @@ export class UsersService {
       order: { createdAt: 'DESC' },
     });
 
-    return users;
+    return successRes(users);
   }
 
   async updateUserRole(
@@ -99,7 +99,7 @@ export class UsersService {
     await this.userRepository.save(user);
 
     const { password: _, ...result } = user;
-    return result;
+    return successRes(result);
   }
 
   async deleteUser(
@@ -134,7 +134,7 @@ export class UsersService {
 
     await this.userRepository.remove(user);
 
-    return { message: 'User deleted Successfully' };
+    return successRes({})
   }
 
   async getProfile(userId: number) {
@@ -147,6 +147,6 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    return user;
+    return successRes(user);
   }
 }

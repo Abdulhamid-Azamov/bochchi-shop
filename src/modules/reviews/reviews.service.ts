@@ -4,6 +4,7 @@ import { Product } from 'src/entities/product.entity';
 import { Review } from 'src/entities/review.entity';
 import { Repository } from 'typeorm';
 import { CreateReviewDto } from './dto/createreview.dto';
+import { successRes } from '../utils/success-res';
 
 @Injectable()
 export class ReviewsService {
@@ -12,7 +13,7 @@ export class ReviewsService {
     private reviewRepository: Repository<Review>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-  ) {}
+  ) { }
 
   async create(userId: number, createReviewDto: CreateReviewDto) {
     const { productId, rating, comment } = createReviewDto;
@@ -31,15 +32,18 @@ export class ReviewsService {
       comment,
     });
 
-    return await this.reviewRepository.save(review);
+    await this.reviewRepository.save(review);
+    return successRes(review,'Review created',201);
   }
 
   async findByProduct(productId: number) {
-    return await this.reviewRepository.find({
+    const review = await this.reviewRepository.find({
       where: { productId: productId },
       relations: ['user'],
       order: { created_at: 'DESC' },
     });
+
+    return successRes(review)
   }
 
   async remove(userId: number, id: number) {
@@ -52,6 +56,6 @@ export class ReviewsService {
     }
 
     await this.reviewRepository.remove(review);
-    return { message: 'Review deleted successfully' };
+    return successRes({})
   }
 }

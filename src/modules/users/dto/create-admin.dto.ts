@@ -4,9 +4,11 @@ export class CreateAdminDto {
   @IsString()
   @IsNotEmpty()
   username: string;
+
   @IsString()
   @IsNotEmpty()
   email: string;
+
   @IsString()
   @IsNotEmpty()
   password: string;

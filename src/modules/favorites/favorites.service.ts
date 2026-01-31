@@ -4,6 +4,7 @@ import { Favourite } from 'src/entities/favourite.entity';
 import { Product } from 'src/entities/product.entity';
 import { Repository } from 'typeorm';
 import { AddToFavoritesDto } from './dto/addtofavorite';
+import { successRes } from '../utils/success-res';
 
 @Injectable()
 export class FavoritesService {
@@ -12,7 +13,7 @@ export class FavoritesService {
     private favoriteRepository: Repository<Favourite>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-  ) {}
+  ) { }
 
   async addToFavorites(userId: number, addToFavoritesDto: AddToFavoritesDto) {
     const { productId } = addToFavoritesDto;
@@ -38,14 +39,14 @@ export class FavoritesService {
     });
 
     await this.favoriteRepository.save(favorite);
-    return { message: 'Product added to favorites' };
+    return successRes(favorite, 'Added to favorites');
   }
 
   async findAll(userId: number) {
-    return await this.favoriteRepository.find({
+    return successRes(await this.favoriteRepository.find({
       where: { userId },
       relations: ['product'],
-    });
+    }))
   }
 
   async remove(userId: number, productId: number) {
@@ -58,6 +59,6 @@ export class FavoritesService {
     }
 
     await this.favoriteRepository.remove(favorite);
-    return { message: 'Product removed from favorites' };
+    return successRes({}, 'Removed from favorites');
   }
 }

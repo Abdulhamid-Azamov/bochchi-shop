@@ -18,7 +18,9 @@ import { FavoritesModule } from './modules/favorites/favorites.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot(dataSourceOptions),
+    TypeOrmModule.forRoot(
+      dataSourceOptions,
+    ),
     TypeOrmModule.forFeature([User]),
     AuthModule,
     UserModule,

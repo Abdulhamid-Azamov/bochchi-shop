@@ -18,6 +18,7 @@ import {
   VerifyOtpDto,
 } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
+import { successRes } from '../utils/success-res';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +30,7 @@ export class AuthService {
     @InjectRepository(AuthSession)
     private sessionRepository: Repository<AuthSession>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async register(registerDto: RegisterDto) {
     const { username, email, password } = registerDto;
@@ -71,6 +72,7 @@ export class AuthService {
       message:
         'Registration successful, please verify your email using the OTP sent.',
       userId: user.id,
+      otpCode
     };
   }
 
@@ -106,7 +108,7 @@ export class AuthService {
 
     await this.sessionRepository.save(session);
 
-    return {
+    return successRes({
       accessToken,
       refreshToken,
       user: {
@@ -115,7 +117,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
       },
-    };
+    })
   }
 
   async verifyOtp(verifyOtpDto: VerifyOtpDto) {

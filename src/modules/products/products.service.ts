@@ -4,17 +4,19 @@ import { Product } from 'src/entities/product.entity';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { successRes } from '../utils/success-res';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-  ) {}
+  ) { }
 
   async create(createProductDto: CreateProductDto) {
     const product = this.productRepository.create(createProductDto);
-    return this.productRepository.save(product);
+    this.productRepository.save(product);
+    return successRes(product,'Product successfully created',201)
   }
 
   async findAll(categoryId?: number) {
@@ -27,7 +29,8 @@ export class ProductsService {
       query.andWhere('product.categoryId = :categoryId', { categoryId });
     }
 
-    return await query.getMany();
+    const allProduct = await query.getMany();
+    return successRes(allProduct)
   }
 
   async findOne(id: number) {
@@ -40,18 +43,25 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    return product;
+    return successRes(product);
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.findOne(id);
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
     Object.assign(product, updateProductDto);
-    return this.productRepository.save(product);
+    this.productRepository.save(product);
+    return successRes(product)
   }
 
   async remove(id: number) {
-    const product = await this.findOne(id);
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
     await this.productRepository.remove(product);
-    return { message: 'Product delete successfully' };
+    return successRes({})
   }
 }

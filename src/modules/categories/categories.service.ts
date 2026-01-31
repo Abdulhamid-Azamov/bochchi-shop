@@ -9,13 +9,17 @@ import { Category } from 'src/entities/category.entity';
 import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/category.dto';
 import { UpdateCategoryDto } from './dto/categoryupdate.dto';
+import { successRes } from '../utils/success-res';
+import { Product } from 'src/entities/product.entity';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
-  ) {}
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+  ) { }
 
   async createCategory(createCategoryDto: CreateCategoryDto) {
     const category = this.categoryRepository.create(createCategoryDto);
@@ -30,13 +34,15 @@ export class CategoriesService {
     if (existingCategory) {
       throw new ConflictException('Category already exists');
     }
-    return await this.categoryRepository.save(category);
+    const saved = await this.categoryRepository.save(category);
+    return successRes(saved, "Category created")
   }
 
   async findAll() {
-    return this.categoryRepository.find({
+    const category = await this.categoryRepository.find({
       relations: ['products'],
     });
+    return successRes(category)
   }
 
   async findOne(id: number) {
@@ -49,18 +55,36 @@ export class CategoriesService {
       throw new NotFoundException('Category not found');
     }
 
-    return category;
+    return successRes(category);
   }
 
   async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto) {
-    const category = await this.findOne(id);
+    const category = await this.categoryRepository.findOneBy({ id });
+    if (!category) {
+      throw new NotFoundException('Category not found')
+    }
     Object.assign(category, updateCategoryDto);
-    return await this.categoryRepository.save(category);
+    const saveUpdate = await this.categoryRepository.save(category);
+    return successRes(saveUpdate)
   }
 
   async remove(id: number) {
-    const category = await this.findOne(id);
+    const category = await this.categoryRepository.findOneBy({ id });
+    if (!category) {
+      throw new NotFoundException('Category not found')
+    }
+    const productsCount = await this.productRepository.count({
+      where: { category: { id } },
+    });
+
+    if (productsCount > 0) {
+      throw new BadRequestException(
+        'This category has products. Remove or move them first.',
+      );
+    }
+
     await this.categoryRepository.remove(category);
-    return { message: 'Category deleted successfully' };
+    await this.categoryRepository.remove(category);
+    return successRes({}, 'Deleted successfully');
   }
 }

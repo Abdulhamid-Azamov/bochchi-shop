@@ -12,6 +12,7 @@ import { Product } from 'src/entities/product.entity';
 import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { successRes } from '../utils/success-res';
 
 
 @Injectable()
@@ -80,15 +81,17 @@ export class OrdersService {
 
     await this.cartItemRepository.delete({ cartId });
 
-    return await this.findOne(order.id);
+    const find = await this.findOne(order.id);
+    return successRes(find, 'Order created', 201)
+
   }
 
   async findAll(userId: number) {
-    return await this.orderRepository.find({
+    return successRes(await this.orderRepository.find({
       where: { userId },
       relations: ['orderItems', 'orderItems.product'],
       order: { createdAt: 'DESC' },
-    });
+    }))
   }
 
   async findOne(id: number) {
@@ -101,11 +104,14 @@ export class OrdersService {
       throw new NotFoundException('Order not found');
     }
 
-    return order;
+    return successRes(order);
   }
 
   async updateStatus(id: number, updateOrderStatusDto: UpdateOrderStatusDto) {
-    const order = await this.findOne(id);
+    const order = await this.orderRepository.findOneBy({ id });
+    if (!order) {
+      throw new NotFoundException('Order not found')
+    }
     order.status = updateOrderStatusDto.status;
     return await this.orderRepository.save(order);
   }

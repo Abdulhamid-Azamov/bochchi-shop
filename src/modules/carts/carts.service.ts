@@ -6,6 +6,7 @@ import { Product } from 'src/entities/product.entity';
 import { Repository } from 'typeorm';
 import { AddToCartDto } from './dto/createcart.dto';
 import { UpdateCartItemDto } from './dto/updatecartitem.dto';
+import { successRes } from '../utils/success-res';
 
 @Injectable()
 export class CartsService {
@@ -16,7 +17,7 @@ export class CartsService {
     private cartItemRepository: Repository<CartItem>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-  ) {}
+  ) { }
 
   async getOrcreateCart(userId: number) {
     let cart = await this.cartRepository.findOne({
@@ -35,7 +36,7 @@ export class CartsService {
   async addTocart(userId: number, addToCartDto: AddToCartDto) {
     const { productId, quantity } = addToCartDto;
 
-    const product = await this.productRepository.find({
+    const product = await this.productRepository.findOne({
       where: { id: productId },
     });
 
@@ -49,7 +50,10 @@ export class CartsService {
     }
 
     let cartItem = await this.cartItemRepository.findOne({
-      where: { cartId: cart.id, productId },
+      where: {
+        cart: { id: cart.id },
+        product: { id: productId },
+      },
     });
 
     if (cartItem) {
@@ -116,6 +120,6 @@ export class CartsService {
       throw new NotFoundException('User not found');
     }
     await this.cartItemRepository.delete({ cartId: cart.id });
-    return { message: 'Cart cleared successfully' };
+    return successRes({});
   }
 }
